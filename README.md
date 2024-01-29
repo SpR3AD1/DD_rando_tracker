@@ -4,6 +4,7 @@ Download the latest release of <a href="https://github.com/dpinela/DeathsDoor.It
 ## How it works
 Starting a randomizer using ItemChanger will create a file in you Death's Door SAVEDATA containing all the information about your seed and your current progress.
 DD_rando_tracker will read that file and show respective data.
+You can adjust the colors and the size of the tracker to match your stream. This configuration will be saved in your Death's Door Appdata-Folder.
 ## How to build
 ```
 pyinstaller --onefile --noconsole --clean --icon="icon.ico" --add-data="images;images" DD_rando_tracker.py
