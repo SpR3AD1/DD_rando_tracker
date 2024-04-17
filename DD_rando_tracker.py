@@ -95,32 +95,35 @@ def mainloop():
         canvas.itemconfig(vitality_text,text=f'{vitality_found} / {vitality_count}', fill=fg_color.get())
         canvas.itemconfig(magic_text,text=f'{magic_found} / {magic_count}', fill=fg_color.get())
         
-        if accessable.get():
-            accessable_text.config(bg=bg_color.get(), fg=fg_color.get(),text=f'accessable locations: {len(Locations_accessable)} / {len(Locations_missing)} / {len(Locations)}')
-        else:
-            accessable_text.config(bg=bg_color.get(), fg=fg_color.get(),text=f'unchecked locations: {len(Locations_missing)} / {len(Locations)}')
 
         filterlist = ["Giant Soul of The Urn Witch", "Giant Soul of The Frog King", "Giant Soul of Betty", "Discarded Umbrella", "Rogue Daggers", "Thunder Hammer", "Reaper's Greatsword", "Reaper's Greatsword", "Arrow Level 2", "Fire", "Fire Level 2", "Bomb", "Bomb Level 2", "Hookshot", "Hookshot Level 2"]
         Items_found = [x for x in Items_found if x not in filterlist]
+        accessable_count = 0
+        listtext = []
+        selection = None
+        for x in Locations_accessable.keys():
+            accessable_count += len(Locations_accessable[x])
+            listtext.append(f'{x} [{str(len(Locations_accessable[x]))}]')
+            if listbox.curselection():
+                if (listbox.get(listbox.curselection()) == f'{x} [{str(len(Locations_accessable[x]))}]'):
+                    selection = len(listtext)
+                    for y in Locations_accessable[x]:
+                        listtext.append(f'     {y}')
         
         if show.get():
             insert_text(filter_list(Items_found,entry.get()),listbox)
         else:
             if accessable.get():
-                listtext = []
-                selection = None
-                for x in Locations_accessable.keys():
-                    listtext.append(f'{x} [{str(len(Locations_accessable[x]))}]')
-                    if listbox.curselection():
-                        if (listbox.get(listbox.curselection()) == f'{x} [{str(len(Locations_accessable[x]))}]'):
-                            selection = len(listtext)
-                            for y in Locations_accessable[x]:
-                                listtext.append(f'     {y}')
                 insert_text(filter_list(listtext,entry.get()),listbox)
                 if selection:
                     listbox.select_set(selection-1)
             else:
                 insert_text(filter_list(Locations_missing,entry.get()),listbox)
+                
+        if accessable.get():
+            accessable_text.config(bg=bg_color.get(), fg=fg_color.get(),text=f'accessable locations: {accessable_count} / {len(Locations_missing)} / {len(Locations)}')
+        else:
+            accessable_text.config(bg=bg_color.get(), fg=fg_color.get(),text=f'unchecked locations: {len(Locations_missing)} / {len(Locations)}')
 
         window.after(200, mainloop)
 
