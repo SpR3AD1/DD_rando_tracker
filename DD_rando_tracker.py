@@ -31,6 +31,7 @@ def mainloop():
         msgbox.showinfo(title='Error', message="Error when using colors. Reverting to default.")
     if not exitFlag.get():    
         Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count = read_file(filepath_var)
+        
         if "Giant Soul of The Urn Witch" in Items_found:
             canvas.itemconfig(grandma,image=grandma_found)
         else:
@@ -106,7 +107,18 @@ def mainloop():
             insert_text(filter_list(Items_found,entry.get()),listbox)
         else:
             if accessable.get():
-                insert_text(filter_list(Locations_accessable,entry.get()),listbox)
+                listtext = []
+                selection = None
+                for x in Locations_accessable.keys():
+                    listtext.append(f'{x} [{str(len(Locations_accessable[x]))}]')
+                    if listbox.curselection():
+                        if (listbox.get(listbox.curselection()) == f'{x} [{str(len(Locations_accessable[x]))}]'):
+                            selection = len(listtext)
+                            for y in Locations_accessable[x]:
+                                listtext.append(f'     {y}')
+                insert_text(filter_list(listtext,entry.get()),listbox)
+                if selection:
+                    listbox.select_set(selection-1)
             else:
                 insert_text(filter_list(Locations_missing,entry.get()),listbox)
 
@@ -120,7 +132,7 @@ def mainloop():
             window.configure(bg=bg_color.get())
             canvas.configure(bg=bg_color.get())
             entry.configure(bg=bg_color.get(), fg=fg_color.get())
-            listbox.configure(bg=bg_color.get(), fg=fg_color.get())
+            listbox.configure(bg=bg_color.get(), fg=fg_color.get(), selectbackground=bg_color.get())
             button_found.configure(bg=bg_color.get(), fg=fg_color.get())
             button_missing.configure(bg=bg_color.get(), fg=fg_color.get())
             filecount.configure(bg=bg_color.get(), fg=fg_color.get(), activebackground=bg_color.get(), activeforeground=fg_color.get())
@@ -140,7 +152,7 @@ def mainloop():
             window.configure(bg=bg_color.get())
             canvas.configure(bg=bg_color.get())
             entry.configure(bg=bg_color.get(), fg=fg_color.get())
-            listbox.configure(bg=bg_color.get(), fg=fg_color.get())
+            listbox.configure(bg=bg_color.get(), fg=fg_color.get(), selectbackground=bg_color.get())
             button_found.configure(bg=bg_color.get(), fg=fg_color.get())
             button_missing.configure(bg=bg_color.get(), fg=fg_color.get())
             filecount.configure(bg=bg_color.get(), fg=fg_color.get(), activebackground=bg_color.get(), activeforeground=fg_color.get())
@@ -375,6 +387,7 @@ scrollbar_v = ttk.Scrollbar(scolled_listbox, orient="vertical")
 scrollbar_h = ttk.Scrollbar(scolled_listbox, orient='horizontal')
 
 listbox.configure(yscrollcommand=scrollbar_v.set,xscrollcommand=scrollbar_h.set)
+listbox.configure(selectbackground=bg_color.get(),highlightthickness=0,activestyle='none')
 scrollbar_v.config(command = listbox.yview) 
 scrollbar_h.config(command = listbox.xview) 
 

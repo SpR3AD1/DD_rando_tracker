@@ -91,13 +91,17 @@ def read_file(filepath_var):
         Items_found = [x for _, x in sorted(zip(Time_found, Items_found), reverse=True)]
         
     filepath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\SAVEDATA\\Randomizer Helper Log.txt'
-    Locations_accessable = []
+    Locations_accessable = {}
+    current = ''
     if path.isfile(filepath):
         f = open(filepath, 'r')
         for line in f.readlines():
-            if not ':' in line and line.strip():
+            if ':' in line and line.strip() and not 'UNCHECKED REACHABLE LOCATIONS' in line:
+                Locations_accessable[line.replace(':', '').strip()] = []
+                current = line.replace(':', '').strip()
+            elif not ':' in line and line.strip():
                 if not line in Locations_accessable:
-                    Locations_accessable.append(line)
+                    Locations_accessable[current].append(line.strip())
         
     return Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count
   
