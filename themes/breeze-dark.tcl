@@ -146,20 +146,20 @@ namespace eval ttk::theme::breeze-dark {
 
             
         ttk::style element create Horizontal.Scrollbar.trough image $I(scrollbar-trough-horiz-active) \
-        -border {6 0 6 0} -sticky ew
+        -border {6 0 6 0} -sticky ew -height 6
         ttk::style element create Horizontal.Scrollbar.thumb \
              image [list $I(scrollbar-slider-horiz) \
                         {active !disabled}  $I(scrollbar-slider-horiz-active) \
                         disabled            $I(scrollbar-slider-insens) \
-            ] -border {6 0 6 0} -sticky ew
+            ] -border {6 0 6 0} -sticky ew -height 6
 
         ttk::style element create Vertical.Scrollbar.trough image $I(scrollbar-trough-vert-active) \
-            -border {0 6 0 6} -sticky ns
+            -border {0 6 0 6} -sticky ns -width 6
         ttk::style element create Vertical.Scrollbar.thumb \
             image [list $I(scrollbar-slider-vert) \
                         {active !disabled}  $I(scrollbar-slider-vert-active) \
                         disabled            $I(scrollbar-slider-insens) \
-            ] -border {0 6 0 6} -sticky ns
+            ] -border {0 6 0 6} -sticky ns -width 6
 
         
         ttk::style element create Horizontal.Scale.trough \

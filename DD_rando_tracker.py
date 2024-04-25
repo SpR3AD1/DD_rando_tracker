@@ -96,27 +96,27 @@ def mainloop():
         canvas.itemconfig(magic_text,text=f'{magic_found} / {magic_count}', fill=fg_color.get())
         
 
-        filterlist = ["Giant Soul of The Urn Witch", "Giant Soul of The Frog King", "Giant Soul of Betty", "Discarded Umbrella", "Rogue Daggers", "Thunder Hammer", "Reaper's Greatsword", "Reaper's Greatsword", "Arrow Level 2", "Fire", "Fire Level 2", "Bomb", "Bomb Level 2", "Hookshot", "Hookshot Level 2"]
+        filterlist = []#["100 Souls", "Life Seed", "Pink Key", "Yellow Key", "Green Key", "Giant Soul of The Urn Witch", "Giant Soul of The Frog King", "Giant Soul of Betty", "Arrow Level 2", "Fire", "Fire Level 2", "Bomb", "Bomb Level 2", "Hookshot", "Hookshot Level 2"]
         Items_found = [x for x in Items_found if x not in filterlist]
         accessable_count = 0
         listtext = []
-        selection = None
+        click_list = clicked_list.get().split('\n')
+        filtered_locations = []
         for x in Locations_accessable.keys():
+            if filter_list(Locations_accessable[x],entry.get()):
+                filtered_locations.append(x)
+        for x in filtered_locations:
             accessable_count += len(Locations_accessable[x])
             listtext.append(f'{x} [{str(len(Locations_accessable[x]))}]')
-            if listbox.curselection():
-                if (listbox.get(listbox.curselection()) == f'{x} [{str(len(Locations_accessable[x]))}]'):
-                    selection = len(listtext)
-                    for y in Locations_accessable[x]:
-                        listtext.append(f'     {y}')
+            if x in click_list:
+                for y in filter_list(Locations_accessable[x],entry.get()):
+                    listtext.append(f'     {y}')
         
         if show.get():
             insert_text(filter_list(Items_found,entry.get()),listbox)
         else:
             if accessable.get():
-                insert_text(filter_list(listtext,entry.get()),listbox)
-                if selection:
-                    listbox.select_set(selection-1)
+                insert_text(listtext,listbox)
             else:
                 insert_text(filter_list(Locations_missing,entry.get()),listbox)
                 
@@ -149,7 +149,7 @@ def mainloop():
             
             makedirs(path.dirname(configpath), exist_ok=True)
             f = open(configpath, "w")
-            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}")
+            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}")
             f.close()
             
             window.configure(bg=bg_color.get())
@@ -160,50 +160,68 @@ def mainloop():
             button_missing.configure(bg=bg_color.get(), fg=fg_color.get())
             filecount.configure(bg=bg_color.get(), fg=fg_color.get(), activebackground=bg_color.get(), activeforeground=fg_color.get())
         
-        
-        set_clickthrough(window,bg_color.get(),clickthrough.get(),transparent.get())
+        if window_border.get():
+            set_clickthrough(window,bg_color.get(),clickthrough.get(),transparent.get())
     
+
 # start of programm
-root = NewRoot()
-root.lower()
-root.iconify()
-root.title("Death's Door Randomizer Tracker")
-
-window = MyMain(root)
-
-show = tk.BooleanVar(value=True)
-exitFlag = tk.BooleanVar(value=False)
-bg_color = tk.StringVar(value="#101010")
-fg_color = tk.StringVar(value="#ffffff")
-window_x = tk.IntVar(value=288)
-window_y = tk.IntVar(value=657)
-accessable = tk.IntVar(value=1)
-transparent = tk.IntVar(value=0)
-x = tk.IntVar(value=0)
-y = tk.IntVar(value=0)
-clickthrough = tk.IntVar(value=0)
-start = tk.BooleanVar(value=True)
-
-bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
+bg_color_v = "#101010"
+fg_color_v = "#ffffff"
+window_x_v = 288
+window_y_v = 657
+accessable_v = 1
+transparent_v = 0
+window_border_v = False
 
 configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
 if path.isfile(configpath):
     f = open(configpath, 'r')
     content = f.read()
     content = content.split('\n')
-    if len(content)>0:
-        bg_color.set(content[0].split(" = ")[1])
+    if not content[0] == "":
+        bg_color_v = content[0].split(" = ")[1]
     if len(content)>1:
-        fg_color.set(content[1].split(" = ")[1])
+        fg_color_v = content[1].split(" = ")[1]
     if len(content)>2:
-        window_x.set(int(content[2].split(" = ")[1]))
+        window_x_v = int(content[2].split(" = ")[1])
     if len(content)>3:
-        window_y.set(int(content[3].split(" = ")[1]))
+        window_y_v = int(content[3].split(" = ")[1])
     if len(content)>4:
-        accessable.set(int(content[4].split(" = ")[1]))
+        accessable_v = int(content[4].split(" = ")[1])
     if len(content)>5:
-        transparent.set(int(content[5].split(" = ")[1]))
+        transparent_v = int(content[5].split(" = ")[1])
+    if len(content)>6:
+        window_border_v = strtobool(content[6].split(" = ")[1])
     f.close()
+    
+if window_border_v:
+    root = NewRoot()
+    root.lower()
+    root.iconify()
+    root.title("Death's Door Randomizer Tracker")
+
+    window = MyMain(root)
+    window.overrideredirect(1)
+else:
+    window = tk.Tk()
+    root = window
+    
+bg_color = tk.StringVar(value=bg_color_v)
+fg_color = tk.StringVar(value=fg_color_v)
+window_x = tk.IntVar(value=window_x_v)
+window_y = tk.IntVar(value=window_y_v)
+accessable = tk.IntVar(value=accessable_v)
+transparent = tk.IntVar(value=transparent_v)
+window_border = tk.BooleanVar(value=window_border_v)
+show = tk.BooleanVar(value=True)
+exitFlag = tk.BooleanVar(value=False)
+x = tk.IntVar(value=0)
+y = tk.IntVar(value=0)
+clickthrough = tk.IntVar(value=0)
+start = tk.BooleanVar(value=True)
+clicked_list = tk.StringVar()
+
+bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
 
 window.attributes("-alpha", 1)
 window.wm_attributes("-topmost", 1)
@@ -213,19 +231,21 @@ draw_scrollbars(bundle_dir, fg_color.get())
 
 window.tk.call('source', path.join(bundle_dir, 'themes/breeze-dark.tcl'))
 
-window.grip = ttk.Sizegrip(window)
 window.style = ttk.Style()
 s = 'breeze-dark'
 window.style.theme_use(s)
-sg_settings = sizegrip_style(background=bg_color.get(), foreground=fg_color.get())
-window.style.theme_settings(s, sg_settings)
-window.grip.place(relx=1.0, rely=1.0, anchor="se")
-window.grip.bind("<B1-Motion>", window.OnMotion)
+
+if window_border.get():
+    window.grip = ttk.Sizegrip(window)
+    sg_settings = sizegrip_style(background=bg_color.get(), foreground=fg_color.get())
+    window.style.theme_settings(s, sg_settings)
+    window.grip.place(relx=1.0, rely=1.0, anchor="se")
+    window.grip.bind("<B1-Motion>", window.OnMotion)
+    set_clickthrough(window,bg_color.get(),clickthrough.get(),transparent.get())
+    root.bind("<Map>", lambda event, window=window, bg_color=bg_color, clickthrough=clickthrough, transparent=transparent,root=root,start=start: toggle_minimize(None,window,bg_color,clickthrough,transparent,root,start))
 
 window.style.configure("Horizontal.TScrollbar", gripcount=0, background=bg_color.get())
 window.style.configure("Vertical.TScrollbar", gripcount=0, background=bg_color.get())
-       
-set_clickthrough(window,bg_color.get(),clickthrough.get(),transparent.get())
 
 photo = tk.PhotoImage(file = path.join(bundle_dir, "images/icon.png"))
 window.iconphoto(True, photo)
@@ -235,16 +255,18 @@ window.title("Death's Door Randomizer Tracker")
 
 window.protocol("WM_DELETE_WINDOW", lambda:on_closing(window,exitFlag))
 
-root.bind("<Map>", lambda event, window=window, bg_color=bg_color, clickthrough=clickthrough, transparent=transparent,root=root,start=start: toggle_minimize(None,window,bg_color,clickthrough,transparent,root,start))
+if not window_border.get():
+    disabled = 'disabled'
+else:
+    disabled = 'normal'
 
 m = tk.Menu(root, tearoff = 0) 
-m.add_checkbutton(label="Enable clickthrough", onvalue=1, offvalue=0, variable=clickthrough, command=lambda:msg_clickthrough(start))
-m.add_command(label="Options",command=lambda:open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent))
+m.add_checkbutton(label="Enable clickthrough", state=disabled, onvalue=1, offvalue=0, variable=clickthrough, command=lambda:msg_clickthrough(start))
+m.add_command(label="Options",command=lambda:open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border))
 m.add_separator() 
 m.add_command(label ="Close",command=lambda:on_closing(root,exitFlag))
   
 window.bind("<Button-3>", lambda event, m=m:do_popup(event,m)) 
-
 
 
 canvas = ResizingCanvas(master=window,width=window_x.get(), height=235, bg=bg_color.get(), highlightthickness=0)
@@ -381,21 +403,25 @@ entry = tk.Entry(window,bg=bg_color.get(), fg=fg_color.get())
 entry.pack(fill=tk.X)
 
 scolled_listbox = tk.Frame(window)
-scolled_listbox.pack(fill=tk.BOTH, expand=1)
+scolled_listbox.pack(fill=tk.BOTH,expand=1, padx=(5, 5), pady=(5, 5))
 
-listbox = tk.Listbox(scolled_listbox, bg=bg_color.get(), fg=fg_color.get(), font=(14))
-listbox.pack(fill=tk.BOTH, expand=1)
+scrollbar_v = ttk.Scrollbar(scolled_listbox, orient="vertical")
+scrollbar_v.pack(side = 'right', fill=tk.Y)
 
-scrollbar_v = ttk.Scrollbar(scolled_listbox, orient="vertical") 
 scrollbar_h = ttk.Scrollbar(scolled_listbox, orient='horizontal')
+scrollbar_h.pack(side = 'bottom', fill=tk.X)
+
+listbox = tk.Listbox(scolled_listbox, bg=bg_color.get(), fg=fg_color.get(), border=0, font=(14))
+listbox.pack(fill=tk.BOTH,expand=1)
+listbox.bind("<<ListboxSelect>>", lambda event=None,self=listbox,clicked_list=clicked_list,checked=show:list_clicked(event,self,clicked_list,checked))
 
 listbox.configure(yscrollcommand=scrollbar_v.set,xscrollcommand=scrollbar_h.set)
 listbox.configure(selectbackground=bg_color.get(),highlightthickness=0,activestyle='none')
 scrollbar_v.config(command = listbox.yview) 
 scrollbar_h.config(command = listbox.xview) 
 
-scrollbar_v.place(in_=listbox, anchor="ne", relx=1.0, relheight=1.0)
-scrollbar_h.place(in_=listbox, anchor="sw", rely=1.0, relwidth=1.0)
+scrollbar_v.pack(side = 'right', fill=tk.Y)
+scrollbar_h.pack(side = 'bottom', fill=tk.X)
 
 pixel = tk.PhotoImage(width=1, height=1)
 filler1 = tk.Label(window, width=window_x.get()-275, image=pixel, bg=bg_color.get(), fg=bg_color.get())

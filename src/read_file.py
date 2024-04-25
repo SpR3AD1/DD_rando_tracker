@@ -47,8 +47,7 @@ def read_file(filepath_var):
                             green_key_found += 1
                         case 'Yellow Key':
                             yellow_key_found += 1
-                        case _:
-                            Items_found.append(y[5])
+                    Items_found.append(y[5])
                     if len(y)>12:
                         z = y[12].split(':')
                         Time_found.append(float(z[1][:-3]))

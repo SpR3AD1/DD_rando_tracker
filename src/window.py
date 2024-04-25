@@ -54,11 +54,11 @@ def draw_scrollbars(bundle_dir,color):
     transcolor = color.lstrip('#')
     transcolor = tuple(int(transcolor[i:i+2], 16) for i in (0, 2, 4))+(100,)
     
-    im = Image.new('RGBA', (30, 20))
+    im = Image.new('RGBA', (30, 6))
     draw = ImageDraw.Draw(im)
-    draw.rectangle((3, 7, 27, 12), fill=color)
-    draw.ellipse((0, 7, 6, 12), fill=color)
-    draw.ellipse((14, 7, 29, 12), fill=color)
+    draw.rectangle((3, 0, 27, 5), fill=color)
+    draw.ellipse((0, 0, 6, 5), fill=color)
+    draw.ellipse((14, 0, 29, 5), fill=color)
     im.save(path.join(bundle_dir, 'themes/breeze-dark/scrollbar-slider-horiz-active.png'))
     im.save(path.join(bundle_dir, 'themes/breeze-dark/scrollbar-slider-horiz.png'))
     
@@ -71,11 +71,11 @@ def draw_scrollbars(bundle_dir,color):
     im.save(path.join(bundle_dir, 'themes/breeze-dark/scrollbar-trough-horiz-active.png'))
     '''
 
-    im = Image.new('RGBA', (20, 30))
+    im = Image.new('RGBA', (6, 30))
     draw = ImageDraw.Draw(im)
-    draw.rectangle((7, 3, 12, 27), fill=color)
-    draw.ellipse((7, 0, 12, 6), fill=color)
-    draw.ellipse((7, 14, 12, 29), fill=color)
+    draw.rectangle((0, 3, 5, 27), fill=color)
+    draw.ellipse((0, 0, 5, 6), fill=color)
+    draw.ellipse((0, 14, 5, 29), fill=color)
     im.save(path.join(bundle_dir, 'themes/breeze-dark/scrollbar-slider-vert-active.png'))
     im.save(path.join(bundle_dir, 'themes/breeze-dark/scrollbar-slider-vert.png'))
     
@@ -96,7 +96,6 @@ class NewRoot(tk.Tk):
 class MyMain(tk.Toplevel):
     def __init__(self, master):
         tk.Toplevel.__init__(self, master)
-        self.overrideredirect(1)
         self.attributes('-topmost', 1)
 
 

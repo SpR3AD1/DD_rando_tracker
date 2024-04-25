@@ -21,6 +21,18 @@ def filter_list(x,lookfor):
     if len(lookfor)>0:
         x = [y for y in x if lookfor.lower() in y.lower()]
     return(x)
+    
+def list_clicked(event,listbox,clicked_str,checked):
+    if not checked.get():
+        if listbox.curselection():
+            clicked_list = clicked_str.get().split('\n')
+            if listbox.get(listbox.curselection()).split(' [')[0] not in clicked_list:
+                if '[' in listbox.get(listbox.curselection()):
+                    clicked_list.append(listbox.get(listbox.curselection()).split(' [')[0])
+            else:
+                clicked_list.remove(listbox.get(listbox.curselection()).split(' [')[0])
+            clicked_str.set('\n'.join(clicked_list))
+        
 
 def on_closing(window,exitFlag):
     exitFlag.set(True)
@@ -87,3 +99,17 @@ def do_popup(event,m):
         m.tk_popup(event.x_root, event.y_root) 
     finally: 
         m.grab_release()
+
+def strtobool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return 1
+    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return 0
+    else:
+        raise ValueError("invalid truth value %r" % (val,))
