@@ -12,7 +12,8 @@ from win32gui import (SetWindowLong, GetWindowLong, SetLayeredWindowAttributes)
 from win32con import (WS_EX_LAYERED, WS_EX_TRANSPARENT, WS_EX_LTRREADING, GWL_EXSTYLE,  LWA_COLORKEY, LWA_ALPHA)
 from win32api import RGB
 
-sys.path.insert(1, 'src/')
+bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
+sys.path.insert(1, path.join(bundle_dir, 'src/'))
     
 from functions import *
 from read_file import *
@@ -220,8 +221,6 @@ y = tk.IntVar(value=0)
 clickthrough = tk.IntVar(value=0)
 start = tk.BooleanVar(value=True)
 clicked_list = tk.StringVar()
-
-bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
 
 window.attributes("-alpha", 1)
 window.wm_attributes("-topmost", 1)
