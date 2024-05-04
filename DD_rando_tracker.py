@@ -88,6 +88,7 @@ def mainloop():
             canvas.itemconfig(hookshot,image=hookshot_found)
         else:
             canvas.itemconfig(hookshot,image=hookshot_missing)
+        
         canvas.itemconfig(pink_key_text,text=f'{pink_key_found} / {pink_key_count}', fill=fg_color.get())
         canvas.itemconfig(yellow_key_text,text=f'{yellow_key_found} / {yellow_key_count}', fill=fg_color.get())
         canvas.itemconfig(green_key_text,text=f'{green_key_found} / {green_key_count}', fill=fg_color.get())
@@ -103,20 +104,31 @@ def mainloop():
         listtext = []
         click_list = clicked_list.get().split('\n')
         filtered_locations = []
+        gomode_active = False
         for x in Locations_accessable.keys():
             if filter_list(Locations_accessable[x],entry.get()):
                 filtered_locations.append(x)
         for x in filtered_locations:
             accessable_count += len(Locations_accessable[x])
             listtext.append(f'{x} [{str(len(Locations_accessable[x]))}]')
+            if "Rusty Belltower Key" in Locations_accessable[x]: gomode_active = True
             if x in click_list:
                 for y in filter_list(Locations_accessable[x],entry.get()):
                     listtext.append(f'     {y}')
         
+        if show_go.get():        
+            canvas.itemconfig(gomode,state='normal')
+            if gomode_active:
+                canvas.itemconfig(gomode,image=gomode_found)
+            else:
+                canvas.itemconfig(gomode,image=gomode_missing)
+        else:
+            canvas.itemconfig(gomode,state='hidden')
+        
         if show.get():
             insert_text(filter_list(Items_found,entry.get()),listbox)
         else:
-            if accessable.get():
+            if accessable.get()==1:
                 insert_text(listtext,listbox)
             else:
                 insert_text(filter_list(Locations_missing,entry.get()),listbox)
@@ -150,7 +162,7 @@ def mainloop():
             
             makedirs(path.dirname(configpath), exist_ok=True)
             f = open(configpath, "w")
-            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}")
+            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}\nshow_go = {show_go.get()}")
             f.close()
             
             window.configure(bg=bg_color.get())
@@ -173,6 +185,7 @@ window_y_v = 657
 accessable_v = 1
 transparent_v = 0
 window_border_v = False
+show_go_v = 1
 
 configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
 if path.isfile(configpath):
@@ -193,6 +206,8 @@ if path.isfile(configpath):
         transparent_v = int(content[5].split(" = ")[1])
     if len(content)>6:
         window_border_v = strtobool(content[6].split(" = ")[1])
+    if len(content)>7:
+        show_go_v = strtobool(content[7].split(" = ")[1])
     f.close()
     
 if window_border_v:
@@ -213,6 +228,7 @@ window_x = tk.IntVar(value=window_x_v)
 window_y = tk.IntVar(value=window_y_v)
 accessable = tk.IntVar(value=accessable_v)
 transparent = tk.IntVar(value=transparent_v)
+show_go = tk.IntVar(value=show_go_v)
 window_border = tk.BooleanVar(value=window_border_v)
 show = tk.BooleanVar(value=True)
 exitFlag = tk.BooleanVar(value=False)
@@ -261,7 +277,7 @@ else:
 
 m = tk.Menu(root, tearoff = 0) 
 m.add_checkbutton(label="Enable clickthrough", state=disabled, onvalue=1, offvalue=0, variable=clickthrough, command=lambda:msg_clickthrough(start))
-m.add_command(label="Options",command=lambda:open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border))
+m.add_command(label="Options",command=lambda:open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go))
 m.add_separator() 
 m.add_command(label ="Close",command=lambda:on_closing(root,exitFlag))
   
@@ -382,6 +398,11 @@ soul = canvas.create_image(window_x.get()/(288/283),165,image=soul_img, anchor="
 
 souls_text = canvas.create_text(window_x.get()/(288/243), 168, text='X / Y', anchor="ne", fill=fg_color.get(), font=('Helvetica 16 bold'))
 
+img= Image.open(path.join(bundle_dir, "images/Gomode_missing.png"))
+gomode_missing = ImageTk.PhotoImage(img.resize((70,70), Image.LANCZOS))
+gomode = canvas.create_image(window_x.get()/(288/144),200,image=gomode_missing, anchor="c")
+img= Image.open(path.join(bundle_dir, "images/Gomode.png"))
+gomode_found = ImageTk.PhotoImage(img.resize((70,70), Image.LANCZOS))
 
 img= Image.open(path.join(bundle_dir, "images/VitalityShard.png"))
 vitality_img = ImageTk.PhotoImage(img.resize((30,30), Image.LANCZOS))

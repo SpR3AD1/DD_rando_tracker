@@ -7,13 +7,14 @@ from os import makedirs
 from os import execl
 import sys
 
-def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border):
+def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go):
     global access
     global trans
     global win_border
     global fg_org
     global bg_org
     global border_org
+    global go_show
     
     def get_settings():
         windowx.delete(0,tk.END)
@@ -55,12 +56,13 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
             accessable.set(access.get())
             transparent.set(trans.get())
             window_border.set(win_border.get())
+            show_go.set(go_show.get())
             
             configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
             
             makedirs(path.dirname(configpath), exist_ok=True)
             f = open(configpath, "w")
-            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}")
+            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}\nshow_go = {show_go.get()}")
             f.close()
             
             window.geometry(f"{window_x.get()}x{window_y.get()}")
@@ -73,7 +75,7 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     newWindow = tk.Toplevel(window)
     newWindow.configure(bg=bg_color.get())
     newWindow.title("Settings")
-    newWindow.geometry("200x275")
+    newWindow.geometry("200x300")
     newWindow.wm_attributes("-topmost", 1)
     
     fg_org = fg_color.get()
@@ -107,9 +109,13 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     access = tk.IntVar(value=accessable.get())
     access_checkbutton = tk.Checkbutton(newWindow, bg=bg_color.get(), fg=fg_color.get(), selectcolor=bg_color.get(), text="only accessable locations", variable=access, onvalue=1, offvalue=0)
     
+    go_show = tk.IntVar(value=show_go.get())
+    go_show_checkbutton = tk.Checkbutton(newWindow, bg=bg_color.get(), fg=fg_color.get(), selectcolor=bg_color.get(), text="show go mode", variable=go_show, onvalue=1, offvalue=0)
+    
     win_border_checkbutton.pack()
     trans_checkbutton.pack()
     access_checkbutton.pack()
+    go_show_checkbutton.pack()
     
     buttonframe = tk.Frame(newWindow, bg=bg_color.get())
     buttonframe.pack(pady=(10, 0))
