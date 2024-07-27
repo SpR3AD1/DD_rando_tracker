@@ -110,6 +110,24 @@ def read_file(filepath_var):
         except:
             sleep(0.2)
             print('err2')
+            
+    filepath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\SAVEDATA\\Randomizer Settings.json'
+    IncludeBelltowerKey = True;
+    if path.isfile(filepath):
+        try:
+            f = open(filepath, 'r')
+            for line in f.readlines():
+                if 'IncludeBelltowerKey' in line:
+                    if ('false' in line):
+                        IncludeBelltowerKey = False
+                if 'GreenTabletDoorCost' in line:
+                    y = line.split(': ')
+                    y = y[1].strip()
+                    seeds_count = (int)(y[:-1])
+        except:
+            sleep(0.2)
+            print('err3')
         
-    return Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count
+        
+    return Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count, IncludeBelltowerKey
   

@@ -31,7 +31,7 @@ def mainloop():
         err = False
         msgbox.showinfo(title='Error', message="Error when using colors. Reverting to default.")
     if not exitFlag.get():    
-        Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count = read_file(filepath_var)
+        Items_found, Time_found, Locations, Locations_missing, Locations_accessable, souls_found, seeds_found, vitality_found, magic_found, souls_count, seeds_count, vitality_count, magic_count, pink_key_found, yellow_key_found, green_key_found, pink_key_count, yellow_key_count, green_key_count, IncludeBelltowerKey = read_file(filepath_var)
         
         if "Giant Soul of The Urn Witch" in Items_found:
             canvas.itemconfig(grandma,image=grandma_found)
@@ -116,7 +116,7 @@ def mainloop():
                 for y in filter_list(Locations_accessable[x],entry.get()):
                     listtext.append(f'     {y}')
         
-        if show_go.get():        
+        if show_go.get() and IncludeBelltowerKey:        
             canvas.itemconfig(gomode,state='normal')
             if gomode_active:
                 canvas.itemconfig(gomode,image=gomode_found)
