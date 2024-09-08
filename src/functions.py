@@ -34,8 +34,11 @@ def list_clicked(event,listbox,clicked_str,checked):
             clicked_str.set('\n'.join(clicked_list))
         
 
-def on_closing(window,exitFlag):
+def on_closing(window,exitFlag,configpath,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go,position_x,position_y,show_unchecked,update_check):
     exitFlag.set(True)
+    f = open(configpath, "w")
+    f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}\nshow_go = {show_go.get()}\nposition_x = {position_x}\nposition_y = {position_y}\nshow_found_locations = {show_unchecked.get()}\ncheck_for_updates = {update_check.get()}")
+    f.close()
     window.destroy()
     
 def hex_to_rgb(value):

@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageTk
 from win32gui import (SetWindowLong, GetWindowLong, SetLayeredWindowAttributes)
 from win32con import (WS_EX_LAYERED, WS_EX_TRANSPARENT, WS_EX_LTRREADING, GWL_EXSTYLE,  LWA_COLORKEY, LWA_ALPHA)
 from win32api import RGB
+import ctypes
 
 bundle_dir = getattr(sys, '_MEIPASS', path.abspath(path.dirname(__file__)))
 sys.path.insert(1, path.join(bundle_dir, 'src/'))
@@ -21,7 +22,36 @@ from ResizingCanvas import *
 from settings import *
 from window import *
 
+version = "1.2.5"
 err = False
+
+def Check_for_updates(version):
+    import requests
+    response = requests.get("https://api.github.com/repos/SpR3AD1/DD_rando_tracker/releases/latest")
+    version = version.split(".")
+    upToDate = True
+    latest = response.json()["name"].split(".")
+    for i in range(len(version)):
+        if version[i] < latest[i]:
+            upToDate = False
+    return upToDate
+
+
+def callback(url):
+    import webbrowser
+    webbrowser.open_new_tab(url)
+   
+def CallForUpdates(toplevel):    
+    toplevel = tk.Toplevel(toplevel)
+    
+    user32 = ctypes.windll.user32
+
+    toplevel.title("Newer version available")
+    toplevel.geometry(f"500x80+{int((user32.GetSystemMetrics(0)/2)-250)}+{int((user32.GetSystemMetrics(1)/2)-180)}")
+    toplevel.wm_attributes("-topmost", 1)
+
+    tk.Label(toplevel, text = "There is a newer version available.\nPlease check:").pack()
+    link = tk.Button(toplevel,text="https://github.com/SpR3AD1/DD_rando_tracker/releases/latest", command=lambda:callback("https://github.com/SpR3AD1/DD_rando_tracker/releases/latest")).pack()
 
 def mainloop():
     global bg_color
@@ -158,7 +188,7 @@ def mainloop():
             bg_color.set("#101010")
             fg_color.set("#ffffff")
             
-            configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
+            configpath = getenv('LocalAppData') + 'Low\\Acid Nerve\\DeathsDoor\\DD_rando_tracker\\Config.cfg'
             
             makedirs(path.dirname(configpath), exist_ok=True)
             f = open(configpath, "w")
@@ -186,8 +216,12 @@ accessable_v = 1
 transparent_v = 0
 window_border_v = False
 show_go_v = 1
+position_x = 0
+position_y = 0
+show_unchecked = True
+checkForUpdates = True
 
-configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
+configpath = getenv('LocalAppData') + 'Low\\Acid Nerve\\DeathsDoor\\DD_rando_tracker\\Config.cfg'
 if path.isfile(configpath):
     f = open(configpath, 'r')
     content = f.read()
@@ -208,6 +242,14 @@ if path.isfile(configpath):
         window_border_v = strtobool(content[6].split(" = ")[1])
     if len(content)>7:
         show_go_v = strtobool(content[7].split(" = ")[1])
+    if len(content)>8:
+        position_x = int(content[8].split(" = ")[1])
+    if len(content)>9:
+        position_y = int(content[9].split(" = ")[1])
+    if len(content)>10:
+        show_unchecked = strtobool(content[10].split(" = ")[1])
+    if len(content)>11:
+        checkForUpdates = strtobool(content[11].split(" = ")[1])
     f.close()
     
 if window_border_v:
@@ -222,6 +264,12 @@ else:
     window = tk.Tk()
     root = window
     
+
+user32 = ctypes.windll.user32
+if (position_x > (user32.GetSystemMetrics(78) - window_x_v)) or (position_y > (user32.GetSystemMetrics(79) - window_y_v)):
+    position_x = 0
+    position_y = 0
+    
 bg_color = tk.StringVar(value=bg_color_v)
 fg_color = tk.StringVar(value=fg_color_v)
 window_x = tk.IntVar(value=window_x_v)
@@ -230,13 +278,14 @@ accessable = tk.IntVar(value=accessable_v)
 transparent = tk.IntVar(value=transparent_v)
 show_go = tk.IntVar(value=show_go_v)
 window_border = tk.BooleanVar(value=window_border_v)
-show = tk.BooleanVar(value=True)
+show = tk.BooleanVar(value=show_unchecked)
 exitFlag = tk.BooleanVar(value=False)
-x = tk.IntVar(value=0)
-y = tk.IntVar(value=0)
+x = tk.IntVar(value=position_x)
+y = tk.IntVar(value=position_y)
 clickthrough = tk.IntVar(value=0)
 start = tk.BooleanVar(value=True)
 clicked_list = tk.StringVar()
+check_for_updates = tk.BooleanVar(value=checkForUpdates)
 
 window.attributes("-alpha", 1)
 window.wm_attributes("-topmost", 1)
@@ -264,11 +313,10 @@ window.style.configure("Vertical.TScrollbar", gripcount=0, background=bg_color.g
 
 photo = tk.PhotoImage(file = path.join(bundle_dir, "images/icon.png"))
 window.iconphoto(True, photo)
-
-window.geometry(f"{window_x.get()}x{window_y.get()}")
+window.geometry(f"{window_x.get()}x{window_y.get()}+{x.get()}+{y.get()}")
 window.title("Death's Door Randomizer Tracker")
 
-window.protocol("WM_DELETE_WINDOW", lambda:on_closing(window,exitFlag))
+window.protocol("WM_DELETE_WINDOW", lambda:on_closing(window,exitFlag,configpath,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go,window.winfo_rootx(),window.winfo_rooty(),show,check_for_updates))
 
 if not window_border.get():
     disabled = 'disabled'
@@ -277,11 +325,15 @@ else:
 
 m = tk.Menu(root, tearoff = 0) 
 m.add_checkbutton(label="Enable clickthrough", state=disabled, onvalue=1, offvalue=0, variable=clickthrough, command=lambda:msg_clickthrough(start))
-m.add_command(label="Options",command=lambda:open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go))
+m.add_command(label="Options",command=lambda:open_settings(version,window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go,window.winfo_rootx(),window.winfo_rooty(),show,check_for_updates))
 m.add_separator() 
-m.add_command(label ="Close",command=lambda:on_closing(root,exitFlag))
+m.add_command(label ="Close",command=lambda:on_closing(root,exitFlag,configpath,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go,window.winfo_rootx(),window.winfo_rooty(),show,check_for_updates))
   
 window.bind("<Button-3>", lambda event, m=m:do_popup(event,m)) 
+
+if check_for_updates.get():
+    if not Check_for_updates(version):
+        CallForUpdates(window)
 
 
 canvas = ResizingCanvas(master=window,width=window_x.get(), height=235, bg=bg_color.get(), highlightthickness=0)

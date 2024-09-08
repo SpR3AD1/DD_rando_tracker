@@ -7,7 +7,7 @@ from os import makedirs
 from os import execl
 import sys
 
-def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go):
+def open_settings(version,window,bg_color,fg_color,window_x,window_y,accessable,transparent,window_border,show_go,position_x,position_y,show_unchecked,update_check):
     global access
     global trans
     global win_border
@@ -15,6 +15,7 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     global bg_org
     global border_org
     global go_show
+    global update
     
     def get_settings():
         windowx.delete(0,tk.END)
@@ -39,7 +40,7 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
             trans_checkbutton.config(state='normal')
 
         
-    def save_settings(bg_color,fg_color,window_x,window_y,accessable):
+    def save_settings(bg_color,fg_color,window_x,window_y,accessable,position_x,position_y):
         global access
         global fg_org
         global bg_org
@@ -57,12 +58,13 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
             transparent.set(trans.get())
             window_border.set(win_border.get())
             show_go.set(go_show.get())
+            update_check.set(update.get())
             
-            configpath = getenv('LocalAppData') + 'Low\Acid Nerve\DeathsDoor\DD_rando_tracker\Config.cfg'
+            configpath = getenv('LocalAppData') + 'Low\\Acid Nerve\\DeathsDoor\\DD_rando_tracker\\Config.cfg'
             
             makedirs(path.dirname(configpath), exist_ok=True)
             f = open(configpath, "w")
-            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}\nshow_go = {show_go.get()}")
+            f.write(f"bg_color = {bg_color.get()}\nfg_color = {fg_color.get()}\nwidth = {window_x.get()}\nheight = {window_y.get()}\naccessable = {accessable.get()}\ntransparent = {transparent.get()}\nwindow_border = {window_border.get()}\nshow_go = {show_go.get()}\nposition_x = {position_x}\nposition_y = {position_y}\nshow_found_locations = {show_unchecked.get()}\ncheck_for_updates = {update_check.get()}")
             f.close()
             
             window.geometry(f"{window_x.get()}x{window_y.get()}")
@@ -75,7 +77,7 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     newWindow = tk.Toplevel(window)
     newWindow.configure(bg=bg_color.get())
     newWindow.title("Settings")
-    newWindow.geometry("200x300")
+    newWindow.geometry("200x350")
     newWindow.wm_attributes("-topmost", 1)
     
     fg_org = fg_color.get()
@@ -112,10 +114,14 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     go_show = tk.IntVar(value=show_go.get())
     go_show_checkbutton = tk.Checkbutton(newWindow, bg=bg_color.get(), fg=fg_color.get(), selectcolor=bg_color.get(), text="show go mode", variable=go_show, onvalue=1, offvalue=0)
     
+    update = tk.IntVar(value=update_check.get())
+    update_check_checkbutton = tk.Checkbutton(newWindow, bg=bg_color.get(), fg=fg_color.get(), selectcolor=bg_color.get(), text="check for updates", variable=update, onvalue=1, offvalue=0)
+    
     win_border_checkbutton.pack()
     trans_checkbutton.pack()
     access_checkbutton.pack()
     go_show_checkbutton.pack()
+    update_check_checkbutton.pack()
     
     buttonframe = tk.Frame(newWindow, bg=bg_color.get())
     buttonframe.pack(pady=(10, 0))
@@ -126,5 +132,7 @@ def open_settings(window,bg_color,fg_color,window_x,window_y,accessable,transpar
     settings_default_button = tk.Button(buttonframe, command=default_settings, text="Default", bg=bg_color.get(), fg=fg_color.get())
     settings_default_button.pack(side="left", padx=(5,5))
     
-    settings_save_button = tk.Button(buttonframe, command=lambda:save_settings(bg_color,fg_color,window_x,window_y,accessable), text="Save", bg=bg_color.get(), fg=fg_color.get())
+    settings_save_button = tk.Button(buttonframe, command=lambda:save_settings(bg_color,fg_color,window_x,window_y,accessable,position_x,position_y), text="Save", bg=bg_color.get(), fg=fg_color.get())
     settings_save_button.pack(side="left", padx=(5,5))
+    
+    tk.Label(newWindow, text =f"Version: {version}", bg=bg_color.get(), fg=fg_color.get()).pack()

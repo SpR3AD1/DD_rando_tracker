@@ -2,3 +2,4 @@ DD_rando_tracker.spec
 dist/
 build/
 stuff/
+venv.bat
