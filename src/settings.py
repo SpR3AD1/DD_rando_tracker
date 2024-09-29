@@ -71,7 +71,6 @@ def open_settings(version,window,bg_color,fg_color,window_x,window_y,accessable,
             
             newWindow.destroy()
             if (not fg_org == fg_color.get()) or (not bg_org == bg_color.get()) or (not border_org == window_border.get()):
-                #msgbox.showinfo(title='Colors changed', message="You changed the colors. For sliders and Sizegrip to be adjusted you need to close and reopen the tracker.")
                 execl(sys.executable, sys.executable, *sys.argv)
         
     newWindow = tk.Toplevel(window)

@@ -22,7 +22,7 @@ from ResizingCanvas import *
 from settings import *
 from window import *
 
-version = "1.2.5"
+version = "1.3.0"
 err = False
 
 def Check_for_updates(version):
@@ -32,6 +32,8 @@ def Check_for_updates(version):
     upToDate = True
     latest = response.json()["name"].split(".")
     for i in range(len(version)):
+        if version[i] > latest[i]:
+            break
         if version[i] < latest[i]:
             upToDate = False
     return upToDate
