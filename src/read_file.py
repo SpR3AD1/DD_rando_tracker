@@ -50,7 +50,7 @@ def read_file(filepath_var):
                         
             for i in data['TrackerLog']:
                 Locations_found.append(i['LocationName'])
-                match i['ItemName']:
+                match i['ItemDisplayName']:
                     case '100 Souls':
                         souls_found += 1
                     case 'Life Seed':
@@ -66,7 +66,7 @@ def read_file(filepath_var):
                     case 'Yellow Key':
                         yellow_key_found += 1
                     case _:
-                        Items_found.append(i['ItemName'])
+                        Items_found.append(i['ItemDisplayName'])
             f.close()
             
             Locations_missing = [x for x in Locations if x not in Locations_found]

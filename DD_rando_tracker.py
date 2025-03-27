@@ -22,7 +22,7 @@ from ResizingCanvas import *
 from settings import *
 from window import *
 
-version = "1.3.0"
+version = "1.3.1"
 err = False
 
 def Check_for_updates(version):
